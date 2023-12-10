@@ -1,56 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import MapEvents from "./../MapEvents/MapEvents";
 
 const Display = () => {
   const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
     if (markers.length === 2) {
-      // Log coordinates when both markers are placed
-      console.log(`From: ${markers[0].lat}, ${markers[0].lng}`);
-      console.log(`To: ${markers[1].lat}, ${markers[1].lng}`);
+      const [from, to] = markers;
+      console.log(`From: ${from.lat}, ${from.lng}`);
+      console.log(`To: ${to.lat}, ${to.lng}`);
     }
   }, [markers]);
 
-  const handleMarkerClick = (event) => {
-    if (markers.length < 2) {
-      // Add marker only if less than 2 exist
-      setMarkers((prevMarkers) => [...prevMarkers, event.latlng]);
-    } else {
-      // Update only the second marker if 2 exist
-      setMarkers((prevMarkers) => [
-        ...prevMarkers.slice(0, 1), // Keep first marker
-        event.latlng,
-      ]);
-    }
-  };
+  const handleMapClick = (event) => {
+    const clickedLatLng = event.latlng;
+    const newMarker = {
+      lat: clickedLatLng.lat.toFixed(6),
+      lng: clickedLatLng.lng.toFixed(6),
+    };
 
-  const handleMapClick = () => {
-    setMarkers([]);
+    if (markers.length < 2) {
+      setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+    } else {
+      // Reset markers if there are already two
+      setMarkers([newMarker]);
+    }
   };
 
   return (
     <MapContainer
-      center={[22.531404, 88.365632]}
-      zoom={13}
-      scrollWheelZoom={true}
-      style={{ height: "400px", width: "100%" }}
-      onClick={handleMapClick}
+      center={[0, 0]}
+      zoom={2}
+      style={{ height: "70vh", width: "100%" }}
     >
       <TileLayer
+        onClick={handleMapClick}
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {markers.map((marker, index) => (
-        <Marker key={`marker-${index}`} position={marker}>
+      <MapEvents />
+
+      {/* {markers.map((marker, index) => (
+        <Marker key={`marker-${index}`} position={[marker.lat, marker.lng]}>
           <Popup>
             {index === 0 ? "From:" : "To:"}
             <br />
             {marker.lat}, {marker.lng}
           </Popup>
         </Marker>
-      ))}
+      ))} */}
     </MapContainer>
   );
 };
