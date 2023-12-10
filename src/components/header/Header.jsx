@@ -2,7 +2,9 @@ import React from "react";
 import "./Header.css";
 
 const Header = () => {
-  return <div className="header">Toll Calculator</div>;
+  return <div> <nav>
+  <a className="logo">Toll Calculator</a>
+</nav></div>;
 };
 
 export default Header;
