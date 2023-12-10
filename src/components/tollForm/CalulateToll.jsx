@@ -1,9 +1,15 @@
 import "./CalculateToll.css";
 
-const CalculateToll = () => {
-  return (
-    <div>CalculateToll</div>
-  )
-}
+const CalculateToll = ({ fromTo, resetFromTo }) => {
+  console.log(fromTo);
 
-export default CalculateToll
+  return (
+    <div>
+      <button onClick={resetFromTo}>Reset</button>
+      <button>Generate Toll</button>
+      <p>{fromTo}</p>
+    </div>
+  );
+};
+
+export default CalculateToll;
