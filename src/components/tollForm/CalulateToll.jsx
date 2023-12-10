@@ -1,49 +1,33 @@
+import { useState } from "react";
 import "./CalculateToll.css";
 
 const CalculateToll = ({ fromTo, resetFromTo }) => {
-  console.log(fromTo);
+  const [details, setDetails] = useState(null);
+
+  const resetApp = () => {
+    resetFromTo();
+    setDetails(null);
+  };
 
   const generateToll = async () => {
+    if (fromTo.length < 2) {
+      alert(`Select From/To`);
+      return;
+    }
     try {
-      const url =
-        "https://apis.tollguru.com/toll/v2/origin-destination-waypoints";
-      const apiKey = "jfNQjLR6nj2pLPPbQB6j32hrBPG4PrN9";
+      const url = "https://tollguru-backend.onrender.com/";
       const body = JSON.stringify({
         from: {
-          lat: 39.95209,
-          lng: -75.16219,
+          lat: fromTo[0][0],
+          lng: fromTo[0][1],
         },
         to: {
-          lat: 40.71455,
-          lng: -74.00715,
-        },
-        waypoints: [
-          {
-            address: "Bridgewater Township , New Jersey",
-          },
-        ],
-        serviceProvider: "here",
-        vehicle: {
-          type: "2AxlesTaxi",
-          weight: {
-            value: 20000,
-            unit: "pound",
-          },
-          height: {
-            value: 7.5,
-            unit: "meter",
-          },
-          length: {
-            value: 7.5,
-            unit: "meter",
-          },
-          axles: 4,
-          emissionClass: "euro_5",
+          lat: fromTo[1][0],
+          lng: fromTo[1][1],
         },
       });
       const headers = {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
       };
 
       const options = {
@@ -54,6 +38,7 @@ const CalculateToll = ({ fromTo, resetFromTo }) => {
       const response = await fetch(url, options);
       const data = await response.json();
       console.log(data);
+      setDetails(data);
     } catch (err) {
       console.log(err);
     }
@@ -61,9 +46,25 @@ const CalculateToll = ({ fromTo, resetFromTo }) => {
 
   return (
     <div>
-      <button onClick={resetFromTo}>Reset</button>
-      <button onClick={generateToll}>Generate Toll</button>
-      <p>{fromTo}</p>
+      {!details ? (
+        <div>
+          <button onClick={resetFromTo}>Reset</button>
+          <button onClick={generateToll}>Generate Toll</button>
+        </div>
+      ) : (
+        <div>
+          <h1>Toll Details</h1>
+          <p>
+            Distance: {details.routes[0].summary.distance.metric} /{" "}
+            {details.routes[0].summary.distance.text}
+          </p>
+          <p>Duration: {details.routes[0].summary.duration.text}</p>
+          <p>
+            Fuel Price: {details.summary.fuelPrice.value} {}
+          </p>
+          <button onClick={resetApp}>Reset Toll Calculator</button>
+        </div>
+      )}
     </div>
   );
 };
